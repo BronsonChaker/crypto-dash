@@ -1,26 +1,30 @@
+import { useState } from 'react';
 import CoinCard from '../components/CoinCard';
 import LimitSelector from '../components/LimitSelector';
 import FilterInput from '../components/FilterInput';
 import SortSelector from '../components/SortSelector';
+import FavoritesToggle from '../components/FavoritesToggle';
 import Spinner from '../components/Spinner';
+import useCoins from '../hooks/useCoins';
+import useFavorites from '../hooks/useFavorites';
 
-const HomePage = ({
-  coins,
-  filter,
-  setFilter,
-  limit,
-  setLimit,
-  sortBy,
-  setSortBy,
-  loading,
-  error,
-}) => {
+const HomePage = () => {
+  const { coins, loading, error, limit, setLimit } = useCoins();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [filter, setFilter] = useState('');
+  const [sortBy, setSortBy] = useState('market_cap_desc');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  // Note: a favorited coin that falls outside the currently-fetched `limit`
+  // simply won't appear here — `coins` from useCoins() is the source of
+  // truth for what's rendered, favorites only filters/marks among those.
   const filteredCoins = coins
     .filter((coin) => {
-      return (
+      const matchesSearch =
         coin.name.toLowerCase().includes(filter.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(filter.toLowerCase())
-      );
+        coin.symbol.toLowerCase().includes(filter.toLowerCase());
+      const matchesFavorites = !showFavoritesOnly || isFavorite(coin.id);
+      return matchesSearch && matchesFavorites;
     })
     .slice()
     .sort((a, b) => {
@@ -50,12 +54,23 @@ const HomePage = ({
         <FilterInput filter={filter} onFilterChange={setFilter} />
         <LimitSelector limit={limit} onLimitChange={setLimit} />
         <SortSelector sortBy={sortBy} onSortChange={setSortBy} />
+        <FavoritesToggle
+          showFavoritesOnly={showFavoritesOnly}
+          onShowFavoritesOnlyChange={setShowFavoritesOnly}
+        />
       </div>
 
       {!loading && !error && (
         <main className='grid'>
           {filteredCoins.length > 0 ? (
-            filteredCoins.map((coin) => <CoinCard key={coin.id} coin={coin} />)
+            filteredCoins.map((coin) => (
+              <CoinCard
+                key={coin.id}
+                coin={coin}
+                isFavorite={isFavorite(coin.id)}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))
           ) : (
             <p>No matching coins</p>
           )}

@@ -35,10 +35,41 @@ a {
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .coin-card:hover {
   transform: translateY(-5px);
+}
+
+.coin-card-link {
+  display: block;
+}
+
+.favorite-star {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #aaa;
+  cursor: pointer;
+  padding: 0.25rem;
+  z-index: 1;
+}
+
+.favorite-star:hover {
+  color: #fff;
+}
+
+.favorite-star.favorited {
+  color: #58a6ff;
+}
+
+.favorite-star.favorited:hover {
+  color: #4090db;
 }
 
 .coin-header {
