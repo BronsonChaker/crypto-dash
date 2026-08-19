@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code local-only files (project-scoped agents/commands/skills stay tracked)
+.claude/settings.local.json
+
+# Playwright MCP output (screenshots, logs)
+.playwright-mcp/
